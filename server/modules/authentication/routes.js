@@ -22,4 +22,14 @@ module.exports = [
     path: "/email-verification",
     handler: controller.verifyEmail,
   },
+  {
+    method: "GET",
+    path: "/reset-token",
+    handler: controller.getResetToken,
+  },
+  {
+    method: "POST",
+    path: "/reset-password",
+    handler: controller.resetPassword,
+  },
 ];

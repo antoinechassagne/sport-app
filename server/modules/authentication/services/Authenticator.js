@@ -14,7 +14,9 @@ const SESSION_MAX_AGE = 3024000000; /* 5 weeks */
  */
 const register = async (email, password, userInformations) => {
   const existingUser = await UsersRepository.getUserByEmail(email);
-  if (existingUser) return null;
+  if (existingUser) {
+    return null;
+  }
   const { salt, hash } = Crypto.hashPassword(password);
   const confirmationToken = Crypto.generateToken();
   const [userId] = await UsersRepository.insertUser({
@@ -38,7 +40,9 @@ const register = async (email, password, userInformations) => {
  */
 const authenticate = async (email, password) => {
   const user = await UsersRepository.getUserByEmail(email);
-  if (!user) return null;
+  if (!user) {
+    return null;
+  }
   const isPasswordValid = Crypto.comparePassword(password, user.salt, user.password);
   if (!isPasswordValid) return null;
   return user.id;
@@ -74,7 +78,7 @@ const discardSession = async (sessionId) => {
  * @param {String} token
  * @returns {Boolean} valid
  */
-const confirmEmail = async (token) => {
+const confirmUserEmail = async (token) => {
   const user = await UsersRepository.getUserByConfirmationToken(token);
   if (!user) {
     return false;
@@ -87,4 +91,49 @@ const confirmEmail = async (token) => {
   return true;
 };
 
-module.exports = { register, authenticate, initializeSession, discardSession, confirmEmail };
+/**
+ * Generate a reset token for a user.
+ *
+ * @param {String} email
+ * @returns {String} token
+ */
+const generateUserResetToken = async (email) => {
+  const user = await UsersRepository.getUserByEmail(email);
+  if (!user) {
+    return false;
+  }
+  const resetToken = Crypto.generateToken();
+  await UsersRepository.updateUser(user.id, { resetToken });
+  return resetToken;
+};
+
+/**
+ * Reset the user password.
+ *
+ * @param {String} password
+ * @param {String} token
+ * @returns {Boolean} success
+ */
+const resetUserPassword = async (password, token) => {
+  const user = await UsersRepository.getUserByResetToken(token);
+  if (!user) {
+    return false;
+  }
+  const { salt, hash } = Crypto.hashPassword(password);
+  await UsersRepository.updateUser(user.id, {
+    salt,
+    password: hash,
+    resetToken: null,
+  });
+  return true;
+};
+
+module.exports = {
+  register,
+  authenticate,
+  initializeSession,
+  discardSession,
+  confirmUserEmail,
+  generateUserResetToken,
+  resetUserPassword,
+};

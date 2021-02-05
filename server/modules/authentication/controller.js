@@ -3,8 +3,8 @@ const SessionCookie = require("./services/SessionCookie");
 const Mails = require("./services/Mails");
 
 exports.register = async (req, res) => {
-  const { email, password, ...userInformations } = req.body;
   try {
+    const { email, password, ...userInformations } = req.body;
     const userId = await Authenticator.register(email, password, userInformations);
     if (!userId) {
       return res.status(400).send({ error: "Une erreur s'est produite lors de la création du compte." });
@@ -17,8 +17,8 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
   try {
+    const { email, password } = req.body;
     const userId = await Authenticator.authenticate(email, password);
     if (!userId) {
       return res.status(400).send({ error: "L'adresse email et/ou le mot de passe est incorrecte." });
@@ -40,9 +40,34 @@ exports.logout = async (req, res) => {
 
 exports.verifyEmail = async (req, res) => {
   try {
-    const valid = Authenticator.confirmEmail(req.query.token);
+    const valid = Authenticator.confirmUserEmail(req.query.token);
     if (!valid) {
       return res.status(400).send({ error: "Le lien n'est plus valide." });
+    }
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).send({ error: "Une erreur s'est produite." });
+  }
+};
+
+exports.getResetToken = async (req, res) => {
+  try {
+    const token = await Authenticator.generateUserResetToken(req.query.email);
+    if (!token) {
+      return res.status(400).send({ error: "Cette adresse email n'est pas reconnue." });
+    }
+    await Mails.sendResetPasswordEmail(token);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).send({ error: "Une erreur s'est produite." });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const success = await Authenticator.resetUserPassword(req.body.password, req.body.token);
+    if (!success) {
+      return res.status(400).send({ error: "Une erreur s'est produite." });
     }
     res.status(204).send();
   } catch (err) {

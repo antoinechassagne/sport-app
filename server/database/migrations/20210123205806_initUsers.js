@@ -8,7 +8,6 @@ exports.up = (knex) => {
     table.string("salt").notNullable();
     table.string("confirmationToken");
     table.string("resetToken");
-    table.date("resetTokenExpirationDate");
     table.boolean("active").notNullable();
     table.string("firstName").notNullable();
     table.string("lastName").notNullable();
