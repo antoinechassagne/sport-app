@@ -1,11 +1,11 @@
 const crypto = require("crypto");
 
 /**
- * Generate a salt.
+ * Generate a token.
  *
- * @returns {String} salt
+ * @returns {String} token
  */
-const generateSalt = () => {
+const generateToken = () => {
   return crypto.randomBytes(64).toString("hex");
 };
 
@@ -16,7 +16,7 @@ const generateSalt = () => {
  * @param {String} salt
  * @returns {Object} { salt, hash }
  */
-const hashPassword = (password, salt = generateSalt()) => {
+const hashPassword = (password, salt = generateToken()) => {
   const hash = crypto.createHmac("sha512", password).update(salt).digest("hex");
   return { salt, hash };
 };
@@ -33,4 +33,4 @@ const comparePassword = (password, salt, hash) => {
   return crypto.timingSafeEqual(Buffer.from(hashPassword(password, salt).hash), Buffer.from(hash));
 };
 
-module.exports = { hashPassword, comparePassword };
+module.exports = { hashPassword, comparePassword, generateToken };

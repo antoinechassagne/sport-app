@@ -16,7 +16,6 @@ module.exports = async (req, res, next) => {
     });
     next();
   } catch (err) {
-    console.log(err);
     res.status(500).send({ error: "Une erreur s'est produite." });
   }
 };
