@@ -17,4 +17,9 @@ module.exports = [
     handler: controller.logout,
     authenticated: true,
   },
+  {
+    method: "GET",
+    path: "/email-verification",
+    handler: controller.verifyEmail,
+  },
 ];

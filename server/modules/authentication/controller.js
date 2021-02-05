@@ -1,5 +1,6 @@
 const Authenticator = require("./services/Authenticator");
 const SessionCookie = require("./services/SessionCookie");
+const Mails = require("./services/Mails");
 
 exports.register = async (req, res) => {
   const { email, password, ...userInformations } = req.body;
@@ -8,8 +9,7 @@ exports.register = async (req, res) => {
     if (!userId) {
       return res.status(400).send({ error: "Une erreur s'est produite lors de la création du compte." });
     }
-    const sessionId = Authenticator.initializeSession(userId);
-    SessionCookie.setCookie(res, sessionId);
+    await Mails.sendConfirmationMail(userId);
     res.status(201).send({ id: userId });
   } catch (err) {
     res.status(500).send({ error: "Une erreur s'est produite." });
@@ -27,7 +27,6 @@ exports.login = async (req, res) => {
     SessionCookie.setCookie(res, sessionId);
     res.status(204).send();
   } catch (err) {
-    console.log(err);
     res.status(500).send({ error: "Une erreur s'est produite." });
   }
 };
@@ -37,4 +36,16 @@ exports.logout = async (req, res) => {
   await Authenticator.discardSession(sessionId);
   SessionCookie.discardCookie(res);
   res.status(204).send();
+};
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const valid = Authenticator.confirmEmail(req.query.token);
+    if (!valid) {
+      return res.status(400).send({ error: "Le lien n'est plus valide." });
+    }
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).send({ error: "Une erreur s'est produite." });
+  }
 };

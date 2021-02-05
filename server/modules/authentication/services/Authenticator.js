@@ -16,10 +16,14 @@ const register = async (email, password, userInformations) => {
   const existingUser = await UsersRepository.getUserByEmail(email);
   if (existingUser) return null;
   const { salt, hash } = Crypto.hashPassword(password);
+  const confirmationToken = Crypto.generateToken();
   const [userId] = await UsersRepository.insertUser({
+    registrationDate: new Date().toISOString(),
     email,
     salt,
     password: hash,
+    confirmationToken,
+    active: false,
     ...userInformations,
   });
   return userId;
@@ -64,4 +68,23 @@ const discardSession = async (sessionId) => {
   await SessionsRepository.deleteSession(sessionId);
 };
 
-module.exports = { register, authenticate, initializeSession, discardSession };
+/**
+ * Confirm user's email by checking if the token sent is valid.
+ *
+ * @param {String} token
+ * @returns {Boolean} valid
+ */
+const confirmEmail = async (token) => {
+  const user = await UsersRepository.getUserByConfirmationToken(token);
+  if (!user) {
+    return false;
+  }
+  await UsersRepository.updateUser(user.id, {
+    confirmationToken: null,
+    confirmationDate: new Date().toISOString(),
+    active: true,
+  });
+  return true;
+};
+
+module.exports = { register, authenticate, initializeSession, discardSession, confirmEmail };
