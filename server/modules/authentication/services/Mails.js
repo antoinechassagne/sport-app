@@ -2,7 +2,7 @@ const Mailer = require("../../../services/Mailer");
 const UsersRepository = require("../../users/repository");
 
 exports.sendConfirmationMail = async (userId) => {
-  const user = await UsersRepository.getUserById(userId);
+  const user = await UsersRepository.getUser({ id: userId });
   const url = `${process.env.APP_DOMAIN}/email-verification?token=${user.confirmationToken}`;
   const text = `${user.firstName}, pour finaliser votre inscription, merci de cliquez sur : ${url}`;
   Mailer.sendMail({
@@ -13,7 +13,7 @@ exports.sendConfirmationMail = async (userId) => {
 };
 
 exports.sendResetPasswordEmail = async (token) => {
-  const user = await UsersRepository.getUserByResetToken(token);
+  const user = await UsersRepository.getUser({ resetToken: token });
   const url = `${process.env.APP_DOMAIN}/reset-password?token=${token}`;
   const text = `${user.firstName}, pour réinitialiser votre mot de passe, merci de cliquez sur : ${url}`;
   Mailer.sendMail({

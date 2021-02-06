@@ -2,7 +2,7 @@ const UsersRepository = require("./repository");
 
 exports.getUser = async (req, res) => {
   try {
-    const result = await UsersRepository.getUserById(req.params.id);
+    const result = await UsersRepository.getUser({ id: req.params.id });
     if (!result) {
       return res.status(204).send();
     }
