@@ -4,7 +4,7 @@ const Crypto = require("./Crypto");
 
 const SESSION_MAX_AGE = 3024000000; /* 5 weeks */
 
-exports.register = async (email, password, userInformations) => {
+async function register(email, password, userInformations) {
   const existingUser = await UsersRepository.getUser({ email });
   if (existingUser) {
     return null;
@@ -21,9 +21,9 @@ exports.register = async (email, password, userInformations) => {
     ...userInformations,
   });
   return userId;
-};
+}
 
-exports.authenticate = async (email, password) => {
+async function authenticate(email, password) {
   const user = await UsersRepository.getUser({ email });
   if (!user) {
     return null;
@@ -31,22 +31,22 @@ exports.authenticate = async (email, password) => {
   const isPasswordValid = Crypto.comparePassword(password, user.salt, user.password);
   if (!isPasswordValid) return null;
   return user.id;
-};
+}
 
-exports.initializeSession = async (userId) => {
+async function initializeSession(userId) {
   await SessionsRepository.deleteSessions({ userId });
   const [sessionId] = await SessionsRepository.createSession({
     userId,
     expirationDate: new Date(Date.now() + SESSION_MAX_AGE).toISOString(),
   });
   return sessionId;
-};
+}
 
-exports.discardSession = async (sessionId) => {
+async function discardSession(sessionId) {
   await SessionsRepository.deleteSession({ id: sessionId });
-};
+}
 
-exports.confirmUserEmail = async (token) => {
+async function confirmUserEmail(token) {
   const user = await UsersRepository.getUser({ confirmationToken: token });
   if (!user) {
     return false;
@@ -60,9 +60,9 @@ exports.confirmUserEmail = async (token) => {
     }
   );
   return true;
-};
+}
 
-exports.generateUserResetToken = async (email) => {
+async function generateUserResetToken(email) {
   const user = await UsersRepository.getUser({ email });
   if (!user) {
     return false;
@@ -70,9 +70,9 @@ exports.generateUserResetToken = async (email) => {
   const resetToken = Crypto.generateToken();
   await UsersRepository.updateUser({ id: user.id }, { resetToken });
   return resetToken;
-};
+}
 
-exports.resetUserPassword = async (password, token) => {
+async function resetUserPassword(password, token) {
   const user = await UsersRepository.getUser({ resetToken: token });
   if (!user) {
     return false;
@@ -87,4 +87,14 @@ exports.resetUserPassword = async (password, token) => {
     }
   );
   return true;
+}
+
+module.exports = {
+  register,
+  authenticate,
+  initializeSession,
+  discardSession,
+  confirmUserEmail,
+  generateUserResetToken,
+  resetUserPassword,
 };

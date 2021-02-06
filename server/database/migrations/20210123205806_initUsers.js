@@ -1,4 +1,4 @@
-exports.up = (knex) => {
+exports.up = function (knex) {
   return knex.schema.createTable("users", (table) => {
     table.increments("id").primary();
     table.date("registrationDate").notNullable();
@@ -14,6 +14,6 @@ exports.up = (knex) => {
   });
 };
 
-exports.down = (knex) => {
+exports.down = function (knex) {
   return knex.schema.dropTableIfExists("users");
 };

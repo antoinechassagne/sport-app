@@ -1,24 +1,24 @@
 const { v4: uuidv4 } = require("uuid");
 const database = require("../../database/index");
 
-exports.createSession = (session) => {
+exports.createSession = function (session) {
   return database("sessions")
     .insert({ id: uuidv4(), ...session })
     .returning("id");
 };
 
-exports.getSession = (query) => {
+exports.getSession = function (query) {
   return database("sessions").where(query).first();
 };
 
-exports.getSessions = (query) => {
+exports.getSessions = function (query) {
   return database("sessions").where(query);
 };
 
-exports.updateSession = (query, update) => {
+exports.updateSession = function (query, update) {
   return database("sessions").where(query).update(update);
 };
 
-exports.deleteSessions = (query) => {
+exports.deleteSessions = function (query) {
   return database("sessions").where(query).del();
 };

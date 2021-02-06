@@ -2,7 +2,7 @@ const Authenticator = require("./services/Authenticator");
 const SessionCookie = require("./services/SessionCookie");
 const Mails = require("./services/Mails");
 
-exports.register = async (req, res) => {
+exports.register = async function (req, res) {
   try {
     const { email, password, ...userInformations } = req.body;
     const userId = await Authenticator.register(email, password, userInformations);
@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+exports.login = async function (req, res) {
   try {
     const { email, password } = req.body;
     const userId = await Authenticator.authenticate(email, password);
@@ -31,14 +31,14 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+exports.logout = async function (req, res) {
   const sessionId = SessionCookie.getCookie(req);
   await Authenticator.discardSession(sessionId);
   SessionCookie.discardCookie(res);
   res.status(204).send();
 };
 
-exports.verifyEmail = async (req, res) => {
+exports.verifyEmail = async function (req, res) {
   try {
     const valid = Authenticator.confirmUserEmail(req.query.token);
     if (!valid) {
@@ -50,7 +50,7 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
-exports.getResetToken = async (req, res) => {
+exports.getResetToken = async function (req, res) {
   try {
     const token = await Authenticator.generateUserResetToken(req.query.email);
     if (!token) {
@@ -63,7 +63,7 @@ exports.getResetToken = async (req, res) => {
   }
 };
 
-exports.resetPassword = async (req, res) => {
+exports.resetPassword = async function (req, res) {
   try {
     const success = await Authenticator.resetUserPassword(req.body.password, req.body.token);
     if (!success) {

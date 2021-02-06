@@ -1,7 +1,7 @@
 const SessionsRepository = require("../modules/authentication/repository");
 const SessionCookie = require("../modules/authentication/services/SessionCookie");
 
-module.exports = async (req, res, next) => {
+module.exports = async function (req, res, next) {
   const sessionId = req.signedCookies[SessionCookie.COOKIE_NAME];
   if (!sessionId) {
     return res.status(403).send();

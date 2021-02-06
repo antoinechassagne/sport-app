@@ -1,21 +1,21 @@
 const database = require("../../database/index");
 
-exports.createUser = (user) => {
+exports.createUser = function (user) {
   return database("users").insert(user).returning("id");
 };
 
-exports.getUser = (query) => {
+exports.getUser = function (query) {
   return database("users").where(query).first();
 };
 
-exports.getUsers = (query) => {
+exports.getUsers = function (query) {
   return database("users").where(query);
 };
 
-exports.updateUser = (query, update) => {
+exports.updateUser = function (query, update) {
   return database("users").where(query).update(update);
 };
 
-exports.deleteUsers = (query) => {
+exports.deleteUsers = function (query) {
   return database("users").where(query).del();
 };
