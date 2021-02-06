@@ -18,9 +18,6 @@ module.exports = {
     migrations: {
       tableName: "migrations",
     },
-    seeds: {
-      tableName: "./seeds",
-    },
   },
   production: {
     client: "pg",
@@ -38,9 +35,6 @@ module.exports = {
     },
     migrations: {
       tableName: "migrations",
-    },
-    seeds: {
-      tableName: "./seeds",
     },
   },
 };

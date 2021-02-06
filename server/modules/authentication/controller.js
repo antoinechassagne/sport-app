@@ -2,7 +2,7 @@ const Authenticator = require("./services/Authenticator");
 const SessionCookie = require("./services/SessionCookie");
 const Mails = require("./services/Mails");
 
-exports.register = async (req, res) => {
+exports.register = async function (req, res) {
   try {
     const { email, password, ...userInformations } = req.body;
     const userId = await Authenticator.register(email, password, userInformations);
@@ -16,14 +16,14 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+exports.login = async function (req, res) {
   try {
     const { email, password } = req.body;
-    const userId = await Authenticator.authenticate(email, password);
-    if (!userId) {
+    const user = await Authenticator.authenticate(email, password);
+    if (!user) {
       return res.status(400).send({ error: "L'adresse email et/ou le mot de passe est incorrecte." });
     }
-    const sessionId = await Authenticator.initializeSession(userId);
+    const sessionId = await Authenticator.initializeSession(user.id);
     SessionCookie.setCookie(res, sessionId);
     res.status(204).send();
   } catch (err) {
@@ -31,14 +31,14 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+exports.logout = async function (req, res) {
   const sessionId = SessionCookie.getCookie(req);
   await Authenticator.discardSession(sessionId);
   SessionCookie.discardCookie(res);
   res.status(204).send();
 };
 
-exports.verifyEmail = async (req, res) => {
+exports.verifyEmail = async function (req, res) {
   try {
     const valid = Authenticator.confirmUserEmail(req.query.token);
     if (!valid) {
@@ -50,7 +50,7 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
-exports.getResetToken = async (req, res) => {
+exports.getResetToken = async function (req, res) {
   try {
     const token = await Authenticator.generateUserResetToken(req.query.email);
     if (!token) {
@@ -63,9 +63,9 @@ exports.getResetToken = async (req, res) => {
   }
 };
 
-exports.resetPassword = async (req, res) => {
+exports.resetPassword = async function (req, res) {
   try {
-    const success = await Authenticator.resetUserPassword(req.body.password, req.body.token);
+    const success = await Authenticator.updateUserPassword(req.body.password, req.body.token);
     if (!success) {
       return res.status(400).send({ error: "Une erreur s'est produite." });
     }
