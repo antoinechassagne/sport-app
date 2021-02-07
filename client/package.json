@@ -13,6 +13,7 @@
     "vue-fragment": "^1.5.1"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "^3.1.0"
+    "@nuxtjs/tailwindcss": "^3.1.0",
+    "@nuxtjs/vercel-builder": "^0.19.0"
   }
 }
