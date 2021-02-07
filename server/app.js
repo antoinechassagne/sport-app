@@ -12,5 +12,6 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(helmet());
 
 app.use("/", router);
+app.get("/", (req, res) => res.send("🏋🏻‍♂️"));
 
 module.exports = app;
