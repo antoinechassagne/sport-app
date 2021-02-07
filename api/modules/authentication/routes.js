@@ -1,15 +1,20 @@
 const controller = require("./controller");
+const registerSchema = require("./schemas/register");
+const loginSchema = require("./schemas/login");
+const resetPasswordSchema = require("./schemas/resetPassword");
 
 module.exports = [
   {
     method: "POST",
     path: "/register",
     handler: controller.register,
+    schema: registerSchema,
   },
   {
     method: "POST",
     path: "/login",
     handler: controller.login,
+    schema: loginSchema,
   },
   {
     method: "GET",
@@ -31,5 +36,6 @@ module.exports = [
     method: "POST",
     path: "/reset-password",
     handler: controller.resetPassword,
+    schema: resetPasswordSchema,
   },
 ];
