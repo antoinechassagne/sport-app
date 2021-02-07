@@ -1,3 +1,11 @@
+# Global
 node_modules
 .DS_Store
+
+# API
 .env
+
+# Client
+.nuxt
+dist
+*sw.js
