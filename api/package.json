@@ -1,5 +1,5 @@
 {
-  "name": "sport-app-server",
+  "name": "sport-app-api",
   "scripts": {
     "develop": "nodemon -r dotenv/config index.js",
     "start": "node index.js",
