@@ -2,10 +2,11 @@ const UsersRepository = require("./repository");
 
 exports.getUser = async function (req, res) {
   try {
-    const result = await UsersRepository.getUser({ id: req.params.id });
-    if (!result) {
+    const user = await UsersRepository.getUser({ id: req.params.id });
+    if (!user) {
       return res.status(204).send();
     }
+    const result = UsersRepository.getPublicFields(user);
     res.status(200).send(result);
   } catch (err) {
     res.status(500).send({ error: "Une erreur s'est produite." });
@@ -14,10 +15,11 @@ exports.getUser = async function (req, res) {
 
 exports.getUsers = async function (req, res) {
   try {
-    const result = await UsersRepository.getUsers(req.query);
-    if (!result.length) {
+    const users = await UsersRepository.getUsers(req.query);
+    if (!users.length) {
       return res.status(204).send();
     }
+    const result = users.map((user) => UsersRepository.getPublicFields(user));
     res.status(200).send(result);
   } catch (err) {
     res.status(500).send({ error: "Une erreur s'est produite." });

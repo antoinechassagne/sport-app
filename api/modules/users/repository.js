@@ -1,5 +1,13 @@
 const database = require("../../database/index");
 
+exports.getPublicFields = function (user) {
+  if (!user) {
+    return null;
+  }
+  const { password, salt, confirmationToken, resetToken, ...publicFields } = user;
+  return publicFields;
+};
+
 exports.createUser = function (user) {
   return database("users").insert(user).returning("id");
 };
