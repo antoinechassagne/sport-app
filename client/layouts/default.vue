@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 import BaseHeader from "@/components/BaseHeader";
 export default {
@@ -20,16 +20,6 @@ export default {
     ...mapGetters({
       loggedUser: "authentication/loggedUser",
     }),
-  },
-  methods: {
-    ...mapActions({
-      fetchLoggedUser: "authentication/fetchLoggedUser",
-    }),
-  },
-  created() {
-    this.fetchLoggedUser().catch(() => {
-      this.$router.push("/login");
-    });
   },
 };
 </script>
