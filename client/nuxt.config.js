@@ -14,8 +14,12 @@ export default {
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
   },
   css: [],
-  plugins: [],
+  plugins: ["~/plugins/axios", "~/plugins/vue-fragment", "~/plugins/route-link"],
   components: true,
-  buildModules: ["@nuxtjs/tailwindcss"],
+  buildModules: ["@nuxtjs/dotenv", "@nuxtjs/tailwindcss"],
   modules: ["@nuxtjs/axios", "@nuxtjs/pwa"],
+  axios: {
+    baseURL: process.env.API_URL,
+    credentials: true,
+  },
 };

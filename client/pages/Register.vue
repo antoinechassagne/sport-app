@@ -1,6 +1,6 @@
 <template>
   <fragment>
-    <Heading level="1">Sport app</Heading>
+    <Heading level="1">S'inscrire</Heading>
   </fragment>
 </template>
 
@@ -8,8 +8,8 @@
 import Heading from "@/components/texts/Heading";
 
 export default {
-  name: "PageHome",
-  middleware: ["authenticated"],
+  name: "PageRegister",
+  middleware: ["guest"],
   components: {
     Heading,
   },
