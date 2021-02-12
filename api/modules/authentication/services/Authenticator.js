@@ -13,13 +13,25 @@ async function register(email, password, userInformations) {
   return userId;
 }
 
-async function authenticate(email, password) {
+async function authenticateByCredentials(email, password) {
   const user = await retrieveUser({ email });
   if (!user) {
     return;
   }
   const isPasswordValid = checkPassword(password, user);
   if (!isPasswordValid) {
+    return;
+  }
+  return user;
+}
+
+async function authenticateBySessionId(sessionId) {
+  const session = await retrieveSession({ id: sessionId });
+  if (!session) {
+    return;
+  }
+  const user = await retrieveUser({ id: session.userId });
+  if (!user) {
     return;
   }
   return user;
@@ -123,6 +135,10 @@ function retrieveUser(query) {
   return UsersRepository.getUser(query);
 }
 
+function retrieveSession(query) {
+  return SessionsRepository.getSession(query);
+}
+
 function hashPassword(password) {
   return Crypto.hashPassword(password);
 }
@@ -137,7 +153,8 @@ function generateToken() {
 
 module.exports = {
   register,
-  authenticate,
+  authenticateByCredentials,
+  authenticateBySessionId,
   initializeSession,
   discardSession,
   confirmUserEmail,

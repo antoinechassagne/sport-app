@@ -1,6 +1,7 @@
 const Authenticator = require("./services/Authenticator");
 const SessionCookie = require("./services/SessionCookie");
 const Mails = require("./services/Mails");
+const UsersRepository = require("../users/repository");
 
 exports.register = async function (req, res) {
   try {
@@ -19,7 +20,7 @@ exports.register = async function (req, res) {
 exports.login = async function (req, res) {
   try {
     const { email, password } = req.body;
-    const user = await Authenticator.authenticate(email, password);
+    const user = await Authenticator.authenticateByCredentials(email, password);
     if (!user) {
       return res.status(400).send({ error: "L'adresse email et/ou le mot de passe est incorrecte." });
     }
@@ -36,6 +37,16 @@ exports.logout = async function (req, res) {
   await Authenticator.discardSession(sessionId);
   SessionCookie.discardCookie(res);
   res.status(204).send();
+};
+
+exports.getLoggedUser = async function (req, res) {
+  const sessionId = SessionCookie.getCookie(req);
+  const user = await Authenticator.authenticateBySessionId(sessionId);
+  if (!user) {
+    return res.status(403).send({ error: "Vous avez été déconnecté." });
+  }
+  const result = UsersRepository.getPublicFields(user);
+  res.status(200).send(result);
 };
 
 exports.verifyEmail = async function (req, res) {

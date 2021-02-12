@@ -8,7 +8,7 @@ function setCookie(res, sessionId) {
     expires: new Date(Date.now() + COOKIE_MAX_AGE),
     signed: true,
     httpOnly: true,
-    sameSite: "Strict",
+    sameSite: "None",
   });
 }
 
